@@ -1,0 +1,26 @@
+{
+  "name": "MoodMap — 世界中のいまの感情、ひとつの地球で。",
+  "short_name": "MoodMap",
+  "description": "匿名で1タップ。あなたの気分が、世界の地球儀を彩る光になる。",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06061a",
+  "theme_color": "#0a0a1f",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "assets/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social", "entertainment"]
+}

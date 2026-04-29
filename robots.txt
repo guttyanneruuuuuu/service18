@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://guttyanneruuuuuu.github.io/service18/sitemap.xml

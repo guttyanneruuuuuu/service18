@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a1f">
+<meta name="description" content="MoodMap — 世界中のいまの感情を、リアルタイムの3D地球儀で。匿名で1タップ投稿、美しい光となって地球を彩る。">
+<meta name="keywords" content="MoodMap,ムードマップ,感情,リアルタイム,世界,3D,地球,SNS,シェア">
+<meta name="author" content="MoodMap">
+
+<!-- セキュリティ：CSP（Content Security Policy） -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.gstatic.com https://www.googletagmanager.com https://*.firebaseio.com https://*.firebasedatabase.app;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' data: blob: https:;
+  connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app https://www.google-analytics.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+  frame-src 'none';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=()">
+
+<!-- OGP / Twitter Card -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="MoodMap — 世界中のいまの感情、ひとつの地球で。">
+<meta property="og:description" content="匿名で1タップ。あなたの気分が、世界の地球儀を彩る光になる。">
+<meta property="og:image" content="https://guttyanneruuuuuu.github.io/service18/assets/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://guttyanneruuuuuu.github.io/service18/">
+<meta property="og:site_name" content="MoodMap">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MoodMap — 世界中のいまの感情、ひとつの地球で。">
+<meta name="twitter:description" content="匿名で1タップ。あなたの気分が、世界の地球儀を彩る光になる。">
+<meta name="twitter:image" content="https://guttyanneruuuuuu.github.io/service18/assets/img/ogp.jpg">
+
+<title>MoodMap — 世界中のいまの感情、ひとつの地球で。</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0%25' stop-color='%23ff8fcf'/%3E%3Cstop offset='50%25' stop-color='%237b6cff'/%3E%3Cstop offset='100%25' stop-color='%2300d4ff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='42' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MOODMAP01"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MOODMAP01', { 'anonymize_ip': true });
+  window.gtag = gtag;
+</script>
+</head>
+<body>
+
+<!-- 起動スプラッシュ -->
+<div id="splash" class="splash">
+  <div class="splash-orb"></div>
+  <h1 class="splash-title">MoodMap</h1>
+  <p class="splash-sub">世界中の<em>いまの感情</em>、ひとつの地球で。</p>
+</div>
+
+<!-- 3D地球儀キャンバス -->
+<canvas id="globe" aria-label="リアルタイム感情地球儀"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ヘッダー -->
+<header class="topbar">
+  <div class="logo" aria-label="MoodMap">
+    <span class="logo-orb"></span>
+    <span class="logo-text">MoodMap</span>
+  </div>
+  <div class="topbar-stats">
+    <div class="stat-pill" id="liveCount" title="リアルタイム参加人数">
+      <span class="stat-dot"></span>
+      <span id="liveCountText">0</span>
+      <small>now</small>
+    </div>
+    <div class="stat-pill" id="todayCount" title="今日の感情の総数">
+      <span id="todayCountText">0</span>
+      <small>today</small>
+    </div>
+  </div>
+</header>
+
+<!-- 中央：気分ピッカー -->
+<main class="composer" id="composer">
+  <div class="composer-card" role="region" aria-label="いまの気分を投稿">
+    <div class="composer-title">いま、どんな気分？</div>
+    <div class="mood-grid" id="moodGrid" role="radiogroup" aria-label="気分を選ぶ">
+      <!-- moods inserted by JS -->
+    </div>
+    <div class="composer-foot">
+      <button class="btn-ghost" id="addMessageBtn" type="button" aria-label="ひとことメモを追加">
+        <span>＋ ひとこと（任意）</span>
+      </button>
+      <button class="btn-cta" id="postBtn" type="button" disabled>
+        <span class="btn-cta-bg"></span>
+        <span class="btn-cta-text">地球に放つ</span>
+      </button>
+    </div>
+    <textarea id="moodMessage" class="mood-message" maxlength="80" placeholder="いまの気持ちをひとこと（最大80文字・任意）" hidden></textarea>
+    <div class="composer-meta">
+      <span id="locStatus" class="loc-status">📍 おおよその位置で投稿（任意・許可してね）</span>
+      <button class="loc-btn" id="locBtn" type="button">位置を許可</button>
+    </div>
+  </div>
+</main>
+
+<!-- 投稿成功後パネル -->
+<div class="afterglow" id="afterglow" hidden>
+  <div class="afterglow-inner">
+    <div class="afterglow-icon">✨</div>
+    <div class="afterglow-title">地球に届きました</div>
+    <div class="afterglow-sub">あなたの気分が世界を少しだけ彩りました</div>
+    <div class="afterglow-actions">
+      <button class="btn-share" id="shareCardBtn" type="button">🌟 シェアカードを作る</button>
+      <button class="btn-ghost-2" id="afterCloseBtn" type="button">続ける</button>
+    </div>
+  </div>
+</div>
+
+<!-- 下部：トレンドフィード -->
+<aside class="feed" id="feed" aria-label="今この瞬間のフィード">
+  <div class="feed-head">
+    <div class="feed-title">🌍 いま地球で起きていること</div>
+    <div class="feed-tabs">
+      <button class="ftab active" data-tab="live">リアルタイム</button>
+      <button class="ftab" data-tab="trending">トレンド</button>
+    </div>
+  </div>
+  <div class="feed-list" id="feedList"></div>
+</aside>
+
+<!-- 右下フローティング操作 -->
+<div class="fab-stack">
+  <button class="fab" id="fabRotate" title="自動回転"><span>🌐</span></button>
+  <button class="fab" id="fabMyTrail" title="あなたの軌跡"><span>💫</span></button>
+  <button class="fab" id="fabAbout" title="MoodMapについて"><span>ℹ︎</span></button>
+</div>
+
+<!-- シェアカードモーダル -->
+<div class="modal" id="shareModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close aria-label="閉じる">×</button>
+    <h2 class="modal-title">あなたの感情カード</h2>
+    <div class="share-card-wrap">
+      <div class="share-card" id="shareCard">
+        <div class="sc-bg"></div>
+        <div class="sc-orb"></div>
+        <div class="sc-brand">MoodMap</div>
+        <div class="sc-mood" id="scMood">😌</div>
+        <div class="sc-label" id="scLabel">穏やか</div>
+        <div class="sc-msg" id="scMsg">きょうは、ゆっくり呼吸しよう。</div>
+        <div class="sc-meta">
+          <span id="scDate">—</span>
+          <span class="sc-dot">·</span>
+          <span id="scLoc">どこかの地球の上で</span>
+        </div>
+        <div class="sc-tag">moodmap.app</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cta" id="dlCardBtn"><span class="btn-cta-bg"></span><span class="btn-cta-text">画像を保存</span></button>
+      <button class="btn-share" id="tweetBtn">𝕏 にシェア</button>
+      <button class="btn-ghost-2" id="copyLinkBtn">リンクをコピー</button>
+    </div>
+  </div>
+</div>
+
+<!-- アバウトモーダル -->
+<div class="modal" id="aboutModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close aria-label="閉じる">×</button>
+    <h2 class="modal-title">MoodMapとは</h2>
+    <p class="modal-text">
+      MoodMapは <b>「世界中のいまの感情」</b> をリアルタイムの地球儀で可視化する場所です。
+      あなたの気分が、地球を彩る光のひとつになります。
+    </p>
+    <ul class="modal-list">
+      <li>🌐 ログイン不要・1タップで投稿</li>
+      <li>🔒 完全匿名・個人情報は送らない</li>
+      <li>✨ 気分はその場で世界の光に</li>
+      <li>📸 美しいシェアカードでSNSに</li>
+    </ul>
+    <p class="modal-fine">© 2026 MoodMap. ぷにぷにUI / Privacy First.</p>
+  </div>
+</div>
+
+<!-- マイトレイル（軌跡）モーダル -->
+<div class="modal" id="trailModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close aria-label="閉じる">×</button>
+    <h2 class="modal-title">あなたの感情の軌跡</h2>
+    <p class="modal-text">この端末で投稿した気分の流れ。あなただけのストーリーです。</p>
+    <div id="trailChart" class="trail-chart"></div>
+    <div id="trailEmpty" class="trail-empty" hidden>まだ気分が記録されていません。最初の光を放ってみよう。</div>
+    <div class="modal-actions">
+      <button class="btn-share" id="trailShareBtn">𝕏 に軌跡をシェア</button>
+    </div>
+  </div>
+</div>
+
+<!-- トースト -->
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- スクリプト読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script type="module" src="assets/js/app.js"></script>
+
+</body>
+</html>
